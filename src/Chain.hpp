@@ -2,26 +2,26 @@
 #define __CHAIN_H__
 
 #include "Block.hpp"
-#include "Transaction.hpp"
-#include <vector>
 #include <jsonrpccpp/server.h>
 
+namespace COIN_GDS_ {
 
-class Chain {
-    
-    public:
-
-        Chain();
+    class Chain {
         
-        void addBlock(Block* blk);
-        void addTrasaction(Transaction* tx);
+        public:
 
-        Json::Value Find(Transaction *tx) const;
+            Chain();
+            
+            void addBlock(Block* blk);
+            void addTrasaction(Transaction* tx);
 
-    private:
-    
-        std::vector<Block*> BLK;
-        std::vector<Transaction*> TX;
+            Json::Value Find(Transaction *tx) const;
+
+        private:
+        
+            std::vector<Block*> BLK;
+            std::vector<Transaction*> TX;
+    };
 };
 
 #endif // __CHAIN_H__

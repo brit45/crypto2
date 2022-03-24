@@ -3,6 +3,6 @@
 
 int main(int argc, const char** argv) {
     
-    Account account;
+    COIN_GDS_::Account account;
     return 0;
 }

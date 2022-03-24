@@ -46,151 +46,155 @@ bool Create_Directory(std::string dir_name) {
     return true;
 }
 
-Word_Seed::Word_Seed() {}
+namespace COIN_GDS_ {
 
-std::string Word_Seed::CreateSeed() const {
-    srand(time(NULL));
+    Word_Seed::Word_Seed() {}
 
-    std::string l;
+    std::string Word_Seed::CreateSeed() const {
+        srand(time(NULL));
 
-    for(int i =0;i< 12; i++) {
-        l.append(this->word_list[rand()%this->ListWord_Len()]);
-        if(i < 12) {
-            l.append(" ");
-        }
-    }
+        std::string l;
 
-    return l;
-}
-
-Account::Account() {
-
-    this->Path_DIR = (std::string)std::getenv("HOME")+ "/.cryptos";
-    this->Path_CONFIG = (std::string)std::getenv("HOME")+ "/.cryptos/config";
-
-    if(!has_Dir(this->Path_DIR)) {
-        
-        if(!Create_Directory(this->Path_DIR)) {
-            return;
-        }
-        
-        std::cout << "[ ! ]\tCreate directory for Crytos on '" << this->Path_DIR+"'" << std::endl;
-
-        std::ofstream os;
-        Json::Value js;
-
-        os.open(this->Path_CONFIG);
-
-        js["VERSION"] = "0.0.1";
-        js["CONFIG"]["PORT"] = 9120;
-        js["CONFIG"]["IP"] = "127.0.0.1";
-        js["CONFIG"]["WALLET"]["PATH"] = this->Path_DIR+"/wallet";
-        js["CONFIG"]["WALLET"]["PUB_KEY"] = this->Path_DIR+"/wallet/id_rsa.pub";
-        js["CONFIG"]["WALLET"]["PRIV_KEY"] = this->Path_DIR+"/wallet/id_rsa";
-        js["CONFIG"]["NETWORK"]["TYPE"][0] = "Main:net";
-        js["CONFIG"]["NETWORK"]["TYPE"][1] = "Test:net";
-        js["CONFIG"]["NETWORK"]["TYPE"][2] = "Dev:net";
-        js["CONFIG"]["NETWORK"]["DEFAULT"] = "Main:net";
-
-        os << js;
-        std::cout << js << std::endl;
-    }
-
-    // Load Config
-    std::fstream fs;
-
-    fs.open(this->Path_CONFIG);
-
-    if(fs.is_open()) {
-
-        if(this->LoadAccount()) {
-            return;
-        }
-    }
-    else {
-        return;
-    }
-
-    fs.close();
-}
-
-bool Account::LoadAccount() {
-
-    std::fstream fs;
-
-    fs.open(this->Path_CONFIG);
-
-    if(fs.is_open()) {
-    
-        Json::Reader jx;
-        Json::Value js;
-
-        jx.parse(fs,js);
-
-        this->Path_WALLET = js["CONFIG"]["WALLET"]["PATH"].asString();
-        this->secretPriv = js["CONFIG"]["WALLET"]["PRIV_KEY"].asString();
-        this->secretPub = js["CONFIG"]["WALLET"]["PUB_KEY"].asString();
-
-        for(int i = 0; i < js["CONFIG"]["NETWORK"]["TYPE"].size();i++) {
-
-            this->Net_Type[i] = js["CONFIG"]["NETWORK"]["TYPE"][i].asString();
-            std::string l = this->Path_DIR+"/"+(std::string)this->Net_Type[i].c_str();
-
-            if(!has_Dir(l)) {
-
-                if(!Create_Directory(l)) {
-                    std::cerr << "Error to Create Directory ' " << l << " '" << std::endl;
-                    return false;
-                }
+        for(int i =0;i< 12; i++) {
+            l.append(this->word_list[rand()%this->ListWord_Len()]);
+            if(i < 12) {
+                l.append(" ");
             }
         }
-        this->Version = js["VERSION"].asString();
 
-        std::cout << js << std::endl;
+        return l;
     }
-    else {
-        std::cerr << "Error Open Config file Failed" << std::endl;
-        return false;
-    }
+    
+    Account::Account() {
 
-    fs.close();
+        this->Path_DIR = (std::string)std::getenv("HOME")+ "/.cryptos";
+        this->Path_CONFIG = (std::string)std::getenv("HOME")+ "/.cryptos/config";
 
-    if(!has_Dir(this->Path_WALLET)) {
+        if(!has_Dir(this->Path_DIR)) {
+            
+            if(!Create_Directory(this->Path_DIR)) {
+                return;
+            }
+            
+            std::cout << "[ ! ]\tCreate directory for Crytos on '" << this->Path_DIR+"'" << std::endl;
 
-        if(!Create_Directory(this->Path_WALLET)) {
-            return false;
+            std::ofstream os;
+            Json::Value js;
+
+            os.open(this->Path_CONFIG);
+
+            js["VERSION"] = "0.0.1";
+            js["CONFIG"]["PORT"] = 9120;
+            js["CONFIG"]["IP"] = "127.0.0.1";
+            js["CONFIG"]["WALLET"]["PATH"] = this->Path_DIR+"/wallet";
+            js["CONFIG"]["WALLET"]["PUB_KEY"] = this->Path_DIR+"/wallet/id_rsa.pub";
+            js["CONFIG"]["WALLET"]["PRIV_KEY"] = this->Path_DIR+"/wallet/id_rsa";
+            js["CONFIG"]["NETWORK"]["TYPE"][0] = "Main:net";
+            js["CONFIG"]["NETWORK"]["TYPE"][1] = "Test:net";
+            js["CONFIG"]["NETWORK"]["TYPE"][2] = "Dev:net";
+            js["CONFIG"]["NETWORK"]["DEFAULT"] = "Main:net";
+
+            os << js;
+            std::cout << js << std::endl;
         }
 
-        fs.open(this->Path_WALLET+"/id");
+        // Load Config
+        std::fstream fs;
+
+        fs.open(this->Path_CONFIG);
 
         if(fs.is_open()) {
+
+            if(this->LoadAccount()) {
+                return;
+            }
+        }
+        else {
+            return;
+        }
+
+        fs.close();
+    }
+
+    bool Account::LoadAccount() {
+
+        std::fstream fs;
+
+        fs.open(this->Path_CONFIG);
+
+        if(fs.is_open()) {
+        
             Json::Reader jx;
             Json::Value js;
 
             jx.parse(fs,js);
 
+            this->Path_WALLET = js["CONFIG"]["WALLET"]["PATH"].asString();
+            this->secretPriv = js["CONFIG"]["WALLET"]["PRIV_KEY"].asString();
+            this->secretPub = js["CONFIG"]["WALLET"]["PUB_KEY"].asString();
+
+            for(int i = 0; i < js["CONFIG"]["NETWORK"]["TYPE"].size();i++) {
+
+                this->Net_Type[i] = js["CONFIG"]["NETWORK"]["TYPE"][i].asString();
+                std::string l = this->Path_DIR+"/"+(std::string)this->Net_Type[i].c_str();
+
+                if(!has_Dir(l)) {
+
+                    if(!Create_Directory(l)) {
+                        std::cerr << "Error to Create Directory ' " << l << " '" << std::endl;
+                        return false;
+                    }
+                }
+            }
+            this->Version = js["VERSION"].asString();
+
             std::cout << js << std::endl;
         }
         else {
-            std::cerr << "Error Open Wallet file failed." << std::endl;
-            this->CreateAccount();
+            std::cerr << "Error Open Config file Failed" << std::endl;
             return false;
         }
+
+        fs.close();
+
+        if(!has_Dir(this->Path_WALLET)) {
+
+            if(!Create_Directory(this->Path_WALLET)) {
+                return false;
+            }
+
+            fs.open(this->Path_WALLET+"/id");
+
+            if(fs.is_open()) {
+                Json::Reader jx;
+                Json::Value js;
+
+                jx.parse(fs,js);
+
+                std::cout << js << std::endl;
+            }
+            else {
+                std::cerr << "Error Open Wallet file failed." << std::endl;
+                this->CreateAccount();
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    return true;
-}
+    bool Account::CreateAccount() {
 
-bool Account::CreateAccount() {
+        std::ofstream ofs;
+        ofs.open(this->Path_WALLET+"/id");
 
-    std::ofstream ofs;
-    ofs.open(this->Path_WALLET+"/id");
+        Json::Value js;
 
-    Json::Value js;
+        js["SEED"]  =  "testdeseed";
 
-    js["SEED"]  =  "testdeseed";
+        ofs << js;
 
-    ofs << js;
+        ofs.close();
+    }
 
-    ofs.close();
-}
+};
