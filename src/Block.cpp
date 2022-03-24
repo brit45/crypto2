@@ -2,32 +2,29 @@
 #include "Sha256.hpp"
 #include <fstream>
 
-namespace COIN_GDS_ {
+Block::Block(Transaction *tx, std::string prev, unsigned long int pos) {
+    this->Previous = prev;
+    this->position = pos;
 
-    Block::Block(Transaction *tx, std::string prev, unsigned long int pos) {
-        this->Previous = prev;
-        this->position = pos;
+    std::string root;
 
-        std::string root;
-
-        for(int i = 0; i < tx->getSizeOfValidateTransactionList(); i++) {
-            root.append("<"+std::to_string(tx->getValidateTransaction(i)->AMOUNT)+" | ");
-            root.append(tx->getValidateTransaction(i)->TO+" | ");
-            root.append(tx->getValidateTransaction(i)->FROM+" | ");
-            root.append(std::to_string(tx->getValidateTransaction(i)->TIMESTAMP)+">");
-        }
-
-        this->Hash = sha256(this->Previous + root);
+    for(int i = 0; i < tx->getSizeOfValidateTransactionList(); i++) {
+        root.append("<"+std::to_string(tx->getValidateTransaction(i)->AMOUNT)+" | ");
+        root.append(tx->getValidateTransaction(i)->TO+" | ");
+        root.append(tx->getValidateTransaction(i)->FROM+" | ");
+        root.append(std::to_string(tx->getValidateTransaction(i)->TIMESTAMP)+">");
     }
-    
-    Block::~Block() {}
 
-    void Block::Genesis() {
+    this->Hash = sha256(this->Previous + root);
+}
 
-        this->Hash = sha256("The new day is the nemesis of the previous days.");
-        this->position = 0;
-        this->Previous = nullptr;
-        this->Sign = nullptr;
-        this->Lenght = sizeof(this);
-    }
-};
+Block::~Block() {}
+
+void Block::Genesis() {
+
+    this->Hash = sha256("The new day is the nemesis of the previous days.");
+    this->position = 0;
+    this->Previous = nullptr;
+    this->Sign = nullptr;
+    this->Lenght = sizeof(this);
+}
