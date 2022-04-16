@@ -2,20 +2,21 @@
 #include "Sha256.hpp"
 #include <fstream>
 
-Block::Block(Transaction *tx, std::string prev, unsigned long int pos) {
-    this->Previous = prev;
-    this->position = pos;
+Block::Block() {}
 
-    std::string root;
+Block::Block(Transaction *tx, std::string prev, unsigned long int pos, std::string auth) {
 
-    for(int i = 0; i < tx->getSizeOfValidateTransactionList(); i++) {
-        root.append("<"+std::to_string(tx->getValidateTransaction(i)->AMOUNT)+" | ");
-        root.append(tx->getValidateTransaction(i)->TO+" | ");
-        root.append(tx->getValidateTransaction(i)->FROM+" | ");
-        root.append(std::to_string(tx->getValidateTransaction(i)->TIMESTAMP)+">");
+    this->Tx.push_back(tx);
+
+    std::string h;
+
+    for(int i=0; i < this->Tx.size();i++) {
+        h.append(Tx[i]->getSign());
     }
 
-    this->Hash = sha256(this->Previous + root);
+    this->Hash = sha256(prev + h);
+    this->position++;
+    this->Author = auth;
 }
 
 Block::~Block() {}
@@ -24,7 +25,5 @@ void Block::Genesis() {
 
     this->Hash = sha256("The new day is the nemesis of the previous days.");
     this->position = 0;
-    this->Previous = nullptr;
-    this->Sign = nullptr;
-    this->Lenght = sizeof(this);
+    this->Previous = "";
 }

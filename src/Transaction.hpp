@@ -13,7 +13,7 @@ struct Transaction_info {
     std::string TO, FROM;
     double AMOUNT;
     time_t TIMESTAMP;
-    double FEE = (2*100)/AMOUNT;
+    double FEE;
 };
 
 class Transaction {
@@ -28,41 +28,8 @@ class Transaction {
          */
         void addTransaction(Transaction_info* tx_info);
 
-        /**
-         * @brief Get the Unvalidate Transaction object
-         * 
-         * @param tx_index 
-         * @return Transaction_info
-         */
-        Transaction_info *getUnvalidateTransaction(int tx_index) const { if(tx_index <= this->tx_Unvalidate.size()) { return this->tx_Unvalidate[tx_index] ;}}
+        void setSign(std::string hash, int nonce, int diff);
         
-        /**
-         * @brief Get the Unvalidate Transaction object
-         * 
-         * @param tx_index 
-         * @return Transaction_info* 
-         */
-        Transaction_info *getValidateTransaction(int tx_index) const { if(tx_index <= this->tx_Validate.size()) { return this->tx_Validate[tx_index] ;}}
-        
-        /**
-         * @brief Update list of transaction.
-         */
-        void UpdateTransaction();
-
-        /**
-         * @brief Get the Size Transaction List object
-         * 
-         * @return unsigned int 
-         */
-        unsigned int getSizeOfUnvalidateTransactionList() const { return this->tx_Unvalidate.size(); }
-
-        /**
-         * @brief Get the Size Of Validate Transaction List object
-         * 
-         * @return unsigned int 
-         */
-        unsigned int getSizeOfValidateTransactionList() const { return this->tx_Validate.size(); }
-
         /**
          * @brief Get the Sign object
          * 
@@ -70,11 +37,20 @@ class Transaction {
          */
         std::string getSign() const { return this->Sign; }
 
+        Transaction *setTreeTransaction(Transaction* tx);
+
+        Transaction_info* getInfo() const;
+
     private:
-        std::vector<Transaction_info*> tx_Unvalidate;
-        std::vector<Transaction_info*> tx_Validate;
-        unsigned int long tx_Index;
-        std::string Sign;
+        unsigned int long tx_Index = 0;
+        Transaction_info* info = NULL;
+        unsigned int Nonce = 0;
+        std::string Sign = "";
+        unsigned int diff = 0;
+
+        Transaction *Tparent = NULL;
+        Transaction *Tleft = NULL;
+        Transaction *Tright = NULL;
 };
 
 #endif // __TRANSACTION_HPP__

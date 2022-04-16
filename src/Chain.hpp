@@ -4,7 +4,6 @@
 #include "Block.hpp"
 #include "Transaction.hpp"
 #include <vector>
-#include <jsonrpccpp/server.h>
 
 
 class Chain {
@@ -14,12 +13,16 @@ class Chain {
         Chain();
         
         void addBlock(Block* blk);
-        void addTrasaction(Transaction* tx);
+        void addTransaction(Transaction* tx);
 
-        Json::Value Find(Transaction *tx) const;
+        void Create_Genesis();
 
-    private:
-    
+        void CreateTransaction(Transaction_info* tx);
+
+        Block *getBlockData(int pos);
+
+        unsigned int size() const { return this->BLK.size(); }
+            
         std::vector<Block*> BLK;
         std::vector<Transaction*> TX;
 };
