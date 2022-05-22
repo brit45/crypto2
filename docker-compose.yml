@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  crypto2:
+    image: crypto2
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+  timezone:
+    build: .
+    environment:
+      - TZ=Europe/PARIS
+      - DEBIAN_FRONTEND=noninteractive
